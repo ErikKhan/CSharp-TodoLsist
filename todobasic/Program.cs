@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace todobasic
@@ -7,10 +8,14 @@ namespace todobasic
     class Program
     {
         public static List<Task> task = new List<Task>();
-        
+
 
         static void Main(string[] args)
         {
+
+
+
+
             bool whileLoop = false;
 
             //Using while loop
@@ -45,6 +50,9 @@ namespace todobasic
         //Function to print the List of all TODOs
         static void listFunction()
         {
+            string txtDest = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Todo.txt");
+            int starti = 0;
+
             if (task.Count == 0)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -61,14 +69,61 @@ namespace todobasic
                 {
                     Console.WriteLine($"{i + 1}  {sortedByDates[i].Title.PadRight(10)}{sortedByDates[i].Description.PadRight(20)}{sortedByDates[i].Date.ToString("yyyy-MM-dd")}");
                 }
+
+
+                // Creating an array to make the list into a txt file
+                string[] potato = new string[sortedByDates.Count * 3 + 1];
+                foreach (Task task in sortedByDates)
+                {
+                    potato[starti] = task.Date.ToString("yyyy-MM-dd");
+                    starti++;
+                    potato[starti] = task.Title;
+                    starti++;
+                    potato[starti] = task.Description;
+                    starti++;
+                }
+                // Saving the array to txt file
+                File.WriteAllLines(txtDest, potato);
+
             }
+
+            // Creating an array of the txt file
+            string[] sortedArray = File.ReadAllLines(txtDest);
+            List<Task> theList = new List<Task>();
+            starti = 0;
+
+            // Printing the array into a list with Todo objects
+            for (int i = 0; i < sortedArray.Length; i++)
+            {
+                if (sortedArray[i] != "")
+                {
+                    DateTime datel = Convert.ToDateTime(sortedArray[i]);
+                    i++;
+                    string titlel = sortedArray[i];
+                    i++;
+                    string descriptl = sortedArray[i];
+
+                    theList.Add(new Task(titlel, descriptl, datel));
+                }
+                // Leaving the loop if the array gives an empty item
+                else
+                {
+                    break;
+                }
+            }
+            // Printing
+            //foreach (Task task in theList)
+            //{
+            //    Console.WriteLine(task.Title);
+            //}
+
 
             Console.WriteLine("\nPress any button to Continue");
             Console.ReadKey();
             Console.Clear();
         }
         //Function to Add Todos 
-        
+
 
         static void addTodo()
         {
@@ -79,7 +134,7 @@ namespace todobasic
             Console.Write("Enter Description: ");
             string desc = Console.ReadLine();
 
-            enterDateAgain: try
+        enterDateAgain: try
             {
                 Console.Write("Enter the Todo Date - yyyy-MM-dd: ");
                 date = Convert.ToDateTime(Console.ReadLine());
@@ -94,7 +149,7 @@ namespace todobasic
 
 
 
-                //creating an object
+            //creating an object
             Task task1 = new Task(title, desc, date);
             task.Add(task1);
             Console.WriteLine("\nTask Successfully Added\n");
@@ -106,7 +161,7 @@ namespace todobasic
         static void removeTodo()
         {
             Console.Write("Type the number you want to delete\n ");
-           
+
             int indexOf;
             try
             {
@@ -141,14 +196,14 @@ namespace todobasic
             Title = title;
             Description = description;
             Date = date;
-            
+
         }
 
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime Date { get; set; }
 
-        
+
     }
 
 }
