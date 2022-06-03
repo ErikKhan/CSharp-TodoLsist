@@ -68,20 +68,33 @@ namespace todobasic
             Console.Clear();
         }
         //Function to Add Todos 
+        
 
         static void addTodo()
         {
+            DateTime date = DateTime.Now;
             //Getting input from the user
             Console.Write("Add a todo: ");
             string title = Console.ReadLine();
             Console.Write("Enter Description: ");
             string desc = Console.ReadLine();
-            Console.Write("Enter the Todo Date - yyyy-MM-dd: ");
-            DateTime date = Convert.ToDateTime(Console.ReadLine());
 
-            
+            enterDateAgain: try
+            {
+                Console.Write("Enter the Todo Date - yyyy-MM-dd: ");
+                date = Convert.ToDateTime(Console.ReadLine());
+            }
+            catch (FormatException)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("This is a DateTime Exception: Try using yyyy-MM-dd:");
+                Console.ResetColor();
+                goto enterDateAgain;
+            }
 
-            //creating an object
+
+
+                //creating an object
             Task task1 = new Task(title, desc, date);
             task.Add(task1);
             Console.WriteLine("\nTask Successfully Added\n");
