@@ -12,7 +12,29 @@ namespace todobasic
 
         static void Main(string[] args)
         {
+            // Creating an array of the txt file
+            string txtDest = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Todo.txt");
+            string[] sortedArray = File.ReadAllLines(txtDest);
 
+            // Printing the array into a list with Todo objects
+            for (int i = 0; i < sortedArray.Length; i++)
+            {
+                if (sortedArray[i] != "")
+                {
+                    DateTime datel = Convert.ToDateTime(sortedArray[i]);
+                    i++;
+                    string titlel = sortedArray[i];
+                    i++;
+                    string descriptl = sortedArray[i];
+
+                    task.Add(new Task(titlel, descriptl, datel));
+                }
+                // Leaving the loop if the array gives an empty item
+                else
+                {
+                    break;
+                }
+            }
 
 
 
@@ -33,13 +55,16 @@ namespace todobasic
                 switch (userInput)
                 {
                     case "1":
-                        listFunction();
+                        listFunction(task);
                         break;
                     case "2":
-                        addTodo();
+                        addTodo(task);
                         break;
                     case "3":
                         removeTodo();
+                        break;
+                    case "4":
+                        quitTodo();
                         break;
                     default:
                         Console.Clear();
@@ -47,11 +72,16 @@ namespace todobasic
                 }
             }
         }
+        static void quitTodo()
+        {            
+            Console.WriteLine("Quit and Save\n");
+            listFunction(task, true);
+        }
+
         //Function to print the List of all TODOs
-        static void listFunction()
+        static void listFunction(List<Task> task, bool exit = false)
         {
             string txtDest = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Todo.txt");
-            int starti = 0;
 
             if (task.Count == 0)
             {
@@ -73,50 +103,24 @@ namespace todobasic
 
                 // Creating an array to make the list into a txt file
                 string[] potato = new string[sortedByDates.Count * 3 + 1];
-                foreach (Task task in sortedByDates)
+                int starti = 0;
+                foreach (Task taski in sortedByDates)
                 {
-                    potato[starti] = task.Date.ToString("yyyy-MM-dd");
+                    potato[starti] = taski.Date.ToString("yyyy-MM-dd");
                     starti++;
-                    potato[starti] = task.Title;
+                    potato[starti] = taski.Title;
                     starti++;
-                    potato[starti] = task.Description;
+                    potato[starti] = taski.Description;
                     starti++;
                 }
                 // Saving the array to txt file
                 File.WriteAllLines(txtDest, potato);
-
             }
 
-            // Creating an array of the txt file
-            string[] sortedArray = File.ReadAllLines(txtDest);
-            List<Task> theList = new List<Task>();
-            starti = 0;
-
-            // Printing the array into a list with Todo objects
-            for (int i = 0; i < sortedArray.Length; i++)
+            if (exit == true)
             {
-                if (sortedArray[i] != "")
-                {
-                    DateTime datel = Convert.ToDateTime(sortedArray[i]);
-                    i++;
-                    string titlel = sortedArray[i];
-                    i++;
-                    string descriptl = sortedArray[i];
-
-                    theList.Add(new Task(titlel, descriptl, datel));
-                }
-                // Leaving the loop if the array gives an empty item
-                else
-                {
-                    break;
-                }
+                Environment.Exit(42069);
             }
-            // Printing
-            //foreach (Task task in theList)
-            //{
-            //    Console.WriteLine(task.Title);
-            //}
-
 
             Console.WriteLine("\nPress any button to Continue");
             Console.ReadKey();
@@ -125,7 +129,7 @@ namespace todobasic
         //Function to Add Todos 
 
 
-        static void addTodo()
+        static void addTodo(List<Task> task)
         {
             DateTime date = DateTime.Now;
             //Getting input from the user
@@ -187,6 +191,7 @@ namespace todobasic
                 Console.ReadKey();
                 Console.Clear();
             }
+
         }
     }
     class Task
